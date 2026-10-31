@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ateliê da Belinha — Alta Costura &amp; Gestão de Ordens de Serviço</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1E293B;
+      background-color: #FFFFFF;
+      overflow-x: hidden;
+    }
+    /* Caligrafia Inglesa Clássica (Copperplate / English Roundhand Script) */
+    .font-calligraphy {
+      font-family: 'Pinyon Script', 'Great Vibes', cursive;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+    .font-calligraphy-alt {
+      font-family: 'Great Vibes', 'Pinyon Script', cursive;
+      font-weight: 400;
+    }
+    .pastel-gradient-bg {
+      background: linear-gradient(135deg, #FDF2F8 0%, #FFFFFF 50%, #F0F9FF 100%);
+    }
+    .ribbon-border {
+      background: linear-gradient(90deg, #F472B6 0%, #38BDF8 50%, #F472B6 100%);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #F472B6;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-white text-slate-800 antialiased selection:bg-pink-500 selection:text-white min-h-screen flex flex-col">
+
+  <!-- FAIXA SUPERIOR DECORATIVA ROSA E AZUL -->
+  <div class="h-1.5 w-full ribbon-border"></div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- MODAL DE EXCEÇÃO DE NEGÓCIO / GUARD CLAUSE (RN-TRI-001, RN-FIN-001, RN-FIN-002) -->
+  <div id="guard-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="bg-white border-2 border-pink-300 rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative">
+      <div class="flex items-start justify-between gap-4 border-b border-pink-100 pb-4">
+        <div>
+          <span id="guard-modal-badge" class="inline-block text-[11px] font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-pink-100 text-pink-800 border border-pink-300 mb-2">
+            HTTP 422 • REGRA DE DOMÍNIO
+          </span>
+          <h3 id="guard-modal-title" class="font-calligraphy text-3xl md:text-4xl text-pink-700 leading-tight">
+            Trava de Transição Acionada
+          </h3>
+        </div>
+        <button id="btn-close-guard-modal" type="button" class="text-slate-400 hover:text-pink-600 text-2xl leading-none px-2">
+          &times;
+        </button>
+      </div>
+      <div class="py-5 space-y-4">
+        <p id="guard-modal-message" class="text-sm text-slate-700 leading-relaxed"></p>
+        <div id="guard-modal-formula" class="bg-sky-50 border border-sky-200 rounded-xl p-3.5 text-xs font-mono text-sky-900"></div>
+      </div>
+      <div class="flex justify-end gap-3 pt-3 border-t border-pink-100">
+        <button id="btn-ack-guard-modal" type="button" class="bg-gradient-to-r from-pink-500 to-sky-500 text-white text-xs font-semibold uppercase tracking-widest px-6 py-2.5 rounded-full hover:opacity-95 transition shadow-xs">
+          Compreendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO E MENU DE NAVEGAÇÃO MULTI-PÁGINAS (Rosa, Azul e Branco) -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-pink-100 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-8 h-24 flex items-center justify-between gap-4">
+      <!-- Marca com Caligrafia Inglesa Clássica -->
+      <button type="button" data-nav-page="inicio" class="text-left group focus:outline-none flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-pink-100 via-white to-sky-100 border-2 border-pink-300 flex items-center justify-center shadow-xs">
+          <span class="font-calligraphy text-2xl text-pink-600 leading-none">B</span>
+        </div>
+        <div>
+          <span class="font-calligraphy text-4xl sm:text-5xl text-pink-600 group-hover:text-sky-600 transition block leading-none">
+            Ateliê da Belinha
+          </span>
+          <span class="text-[10px] uppercase tracking-[0.28em] text-sky-600 font-semibold block mt-1">
+            Alta Costura &amp; Ajustes Finos
+          </span>
+        </div>
+      </button>
+
+      <!-- Menu Desktop (1 Página Exclusiva para cada Opção) -->
+      <nav class="hidden lg:flex items-center gap-2">
+        <button
+          type="button"
+          data-nav-page="inicio"
+          class="nav-tab-btn px-4 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition"
+        >
+          Início
+        </button>
+        <button
+          type="button"
+          data-nav-page="sobre"
+          class="nav-tab-btn px-4 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition"
+        >
+          Sobre o Ateliê
+        </button>
+        <button
+          type="button"
+          data-nav-page="catalogo"
+          class="nav-tab-btn px-4 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition"
+        >
+          Catálogo &amp; Tecidos
+        </button>
+        <button
+          type="button"
+          data-nav-page="nova-os"
+          class="nav-tab-btn px-4 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition"
+        >
+          Nova OS (Triagem)
+        </button>
+        <button
+          type="button"
+          data-nav-page="painel-os"
+          class="nav-tab-btn px-4 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition flex items-center gap-2"
+        >
+          <span>Painel de Ordens</span>
+          <span id="nav-os-count" class="bg-sky-100 text-sky-800 border border-sky-300 px-2 py-0.5 text-[10px] font-mono rounded-full">4</span>
+        </button>
+      </nav>
+
+      <!-- Botão Menu Mobile -->
+      <button
+        id="btn-mobile-menu"
+        type="button"
+        class="lg:hidden bg-pink-50 text-pink-700 border border-pink-200 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-widest hover:bg-pink-100 transition"
+      >
+        Páginas ☰
+      </button>
+    </div>
+
+    <!-- Menu Mobile -->
+    <div id="mobile-menu-drawer" class="hidden lg:hidden bg-white border-t border-pink-100 px-6 py-4 space-y-2 shadow-lg">
+      <button type="button" data-nav-page="inicio" class="block w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-700 hover:bg-pink-50 hover:text-pink-700">
+        1. Início
+      </button>
+      <button type="button" data-nav-page="sobre" class="block w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-700 hover:bg-pink-50 hover:text-pink-700">
+        2. Sobre o Ateliê
+      </button>
+      <button type="button" data-nav-page="catalogo" class="block w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-700 hover:bg-pink-50 hover:text-pink-700">
+        3. Catálogo &amp; Tecidos
+      </button>
+      <button type="button" data-nav-page="nova-os" class="block w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-700 hover:bg-pink-50 hover:text-pink-700">
+        4. Nova OS (Triagem &amp; Orçamento)
+      </button>
+      <button type="button" data-nav-page="painel-os" class="block w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-700 hover:bg-pink-50 hover:text-pink-700">
+        5. Painel de Ordens (Status)
+      </button>
+    </div>
+
+    <!-- Barra de Indicador de Página Atual (Breadcrumb) -->
+    <div class="bg-gradient-to-r from-pink-50/90 via-white to-sky-50/90 border-t border-pink-100/80 py-2 px-4 sm:px-8">
+      <div class="max-w-[1240px] mx-auto flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-slate-500">
+          <span class="text-pink-600 font-medium">Ateliê da Belinha</span>
+          <span>/</span>
+          <span id="breadcrumb-current-page" class="font-semibold text-sky-700">Página Inicial</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="hidden sm:inline text-[11px] text-slate-400">Paleta Clássica: Rosa, Azul Celeste &amp; Branco</span>
+          <span class="inline-flex items-center gap-1">
+            <span class="w-2.5 h-2.5 rounded-full bg-pink-400 inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-white border border-slate-300 inline-block"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL: SISTEMA DE PÁGINAS INDEPENDENTES -->
+  <main class="flex-1">
+
+    <!-- =================================================================== -->
+    <!-- PÁGINA 1: INÍCIO (page-inicio)                                      -->
+    <!-- =================================================================== -->
+    <section id="page-inicio" data-page-section="inicio" class="pastel-gradient-bg py-12 md:py-20">
+      <div class="max-w-[1240px] mx-auto px-4 sm:px-8 space-y-16">
+        
+        <!-- Hero Principal Rosa, Azul e Branco -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-white rounded-3xl border-2 border-pink-100 shadow-xl p-6 sm:p-10 md:p-14 relative overflow-hidden">
+          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-pink-100/60 blur-2xl pointer-events-none"></div>
+          <div class="absolute -bottom-16 -right-16 w-60 h-60 rounded-full bg-sky-100/70 blur-2xl pointer-events-none"></div>
+
+          <div class="lg:col-span-6 space-y-6 relative z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-50 border border-pink-200 text-pink-700 text-xs font-semibold tracking-wider uppercase">
+              <span>✦ Alta Costura &amp; Modelagem Sob Medida</span>
+            </div>
+
+            <h1 class="font-calligraphy text-5xl sm:text-6xl md:text-7xl text-pink-600 leading-[1.12]">
+              Elegância Clássica em Cada Detalhe
+            </h1>
+
+            <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+              Bem-vinda ao <strong class="text-pink-700">Ateliê da Belinha</strong>. Unimos a delicadeza da alfaiataria artesanal em sedas, rendas, veludos e pedrarias a uma gestão transparente de Ordens de Serviço, do primeiro alinhavo até a entrega final.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-4 pt-2">
+              <button
+                type="button"
+                data-nav-page="nova-os"
+                class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold uppercase tracking-widest px-7 py-4 rounded-full shadow-md transition flex items-center gap-2"
+              >
+                <span>Abrir Nova Ordem de Serviço</span>
+                <span class="text-base leading-none">+</span>
+              </button>
+              <button
+                type="button"
+                data-nav-page="catalogo"
+                class="bg-sky-50 hover:bg-sky-100 text-sky-800 border-2 border-sky-300 text-xs font-semibold uppercase tracking-widest px-7 py-3.5 rounded-full transition"
+              >
+                Explorar Catálogo
+              </button>
+            </div>
+
+            <!-- Indicadores Rápidos -->
+            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-pink-100">
+              <div class="bg-pink-50/60 border border-pink-200 rounded-2xl p-3.5 text-center">
+                <span id="home-kpi-total-os" class="font-calligraphy text-3xl sm:text-4xl text-pink-600 block leading-none">4</span>
+                <span class="text-[11px] text-slate-600 font-medium mt-1 block">Ordens no Painel</span>
+              </div>
+              <div class="bg-sky-50/60 border border-sky-200 rounded-2xl p-3.5 text-center">
+                <span class="font-calligraphy text-3xl sm:text-4xl text-sky-600 block leading-none">7 Dias</span>
+                <span class="text-[11px] text-slate-600 font-medium mt-1 block">Validade de Orçamento</span>
+              </div>
+              <div class="bg-white border border-pink-200 rounded-2xl p-3.5 text-center">
+                <span class="font-calligraphy text-3xl sm:text-4xl text-pink-600 block leading-none">100%</span>
+                <span class="text-[11px] text-slate-600 font-medium mt-1 block">Vistoria Fotográfica</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-6 relative z-10">
+            <div class="rounded-2xl overflow-hidden border-4 border-sky-100 shadow-lg bg-pink-50">
+              <img
+                src="/images/atelier_hero_pink_blue.jpg"
+                alt="Interior do Ateliê da Belinha em Rosa, Azul e Branco"
+                class="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Cartões de Acesso Rápido às Páginas do Menu -->
+        <div>
+          <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-xs font-semibold uppercase tracking-widest text-sky-600 block mb-1">
+              NAVEGAÇÃO POR PÁGINAS
+            </span>
+            <h2 class="font-calligraphy text-4xl sm:text-5xl text-pink-600">
+              Tudo o que Seu Vestido Precisa
+            </h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white border-2 border-pink-100 hover:border-pink-300 rounded-2xl p-6 shadow-xs flex flex-col justify-between transition">
+              <div>
+                <span class="inline-block px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-[11px] font-semibold mb-3">PÁGINA 02</span>
+                <h3 class="font-calligraphy text-3xl text-pink-700 mb-2">Sobre o Ateliê</h3>
+                <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                  Conheça nossa história, nossa filosofia de trabalho artesanal e o protocolo de proteção para tecidos delicados.
+                </p>
+              </div>
+              <button type="button" data-nav-page="sobre" class="text-xs font-semibold text-pink-600 hover:text-pink-800 uppercase tracking-wider text-left">
+                Acessar Página &rarr;
+              </button>
+            </div>
+
+            <div class="bg-white border-2 border-sky-100 hover:border-sky-300 rounded-2xl p-6 shadow-xs flex flex-col justify-between transition">
+              <div>
+                <span class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-[11px] font-semibold mb-3">PÁGINA 03</span>
+                <h3 class="font-calligraphy text-3xl text-sky-700 mb-2">Catálogo &amp; Preços</h3>
+                <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                  Consulte valores base de bainhas, ajustes, zíperes, reformas de festa e a tabela de fatores por tipo de tecido.
+                </p>
+              </div>
+              <button type="button" data-nav-page="catalogo" class="text-xs font-semibold text-sky-600 hover:text-sky-800 uppercase tracking-wider text-left">
+                Acessar Página &rarr;
+              </button>
+            </div>
+
+            <div class="bg-white border-2 border-pink-100 hover:border-pink-300 rounded-2xl p-6 shadow-xs flex flex-col justify-between transition">
+              <div>
+                <span class="inline-block px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-[11px] font-semibold mb-3">PÁGINA 04</span>
+                <h3 class="font-calligraphy text-3xl text-pink-700 mb-2">Nova Ordem (OS)</h3>
+                <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                  Realize a triagem com checklist de avarias, compressão local de fotos e cálculo automático de orçamento.
+                </p>
+              </div>
+              <button type="button" data-nav-page="nova-os" class="text-xs font-semibold text-pink-600 hover:text-pink-800 uppercase tracking-wider text-left">
+                Acessar Página &rarr;
+              </button>
+            </div>
+
+            <div class="bg-white border-2 border-sky-100 hover:border-sky-300 rounded-2xl p-6 shadow-xs flex flex-col justify-between transition">
+              <div>
+                <span class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-[11px] font-semibold mb-3">PÁGINA 05</span>
+                <h3 class="font-calligraphy text-3xl text-sky-700 mb-2">Painel de Ordens</h3>
+                <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                  Acompanhe o status de cada peça na bancada, registre pagamentos de sinal e conclua entregas com segurança.
+                </p>
+              </div>
+              <button type="button" data-nav-page="painel-os" class="text-xs font-semibold text-sky-600 hover:text-sky-800 uppercase tracking-wider text-left">
+                Acessar Página &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- PÁGINA 2: SOBRE O ATELIÊ (page-sobre)                               -->
+    <!-- =================================================================== -->
+    <section id="page-sobre" data-page-section="sobre" class="hidden pastel-gradient-bg py-12 md:py-20">
+      <div class="max-w-[1180px] mx-auto px-4 sm:px-8 space-y-14">
+        
+        <div class="text-center max-w-3xl mx-auto">
+          <span class="inline-block px-4 py-1 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-semibold uppercase tracking-widest mb-3">
+            NOSSA HISTÓRIA &amp; TRADIÇÃO
+          </span>
+          <h1 class="font-calligraphy text-5xl sm:text-6xl text-pink-600 mb-4">
+            A Arte da Costura Sob Medida
+          </h1>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            No Ateliê da Belinha, cada peça é tratada como uma obra única. Combinamos técnicas clássicas de moulage e acabamento invisível com um controle rigoroso de qualidade.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-white rounded-3xl border-2 border-sky-100 shadow-lg p-6 sm:p-10">
+          <div class="lg:col-span-6">
+            <div class="rounded-2xl overflow-hidden border-4 border-pink-100 shadow-md">
+              <img
+                src="/images/atelier_detail_pink_blue.jpg"
+                alt="Detalhe de Alta Costura em Veludo Azul e Seda Rosa"
+                class="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+
+          <div class="lg:col-span-6 space-y-6">
+            <h2 class="font-calligraphy text-4xl sm:text-5xl text-sky-700 leading-tight">
+              Amor pelos Tecidos Nobres e Delicados
+            </h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Fundado por <strong class="text-pink-700">Isabel "Belinha" Albuquerque</strong>, nosso ateliê nasceu do desejo de oferecer um ambiente acolhedor — inspirado na suavidade do rosa, na serenidade do azul celeste e na pureza do branco — onde roupas de festa, noivas e alfaiataria do dia a dia recebem cuidado especializado.
+            </p>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Para garantir transparência total com nossas clientes, todas as peças passam por uma <strong>Vistoria Fotográfica de Entrada</strong>, registrando características originais do tecido antes de qualquer intervenção na bancada.
+            </p>
+
+            <div class="bg-gradient-to-r from-pink-50 to-sky-50 border border-pink-200 rounded-2xl p-5">
+              <p class="font-calligraphy text-3xl text-pink-700 mb-2">
+                "Vestir bem é sentir que a roupa abraça a sua essência com leveza e perfeição."
+              </p>
+              <p class="text-xs font-semibold text-sky-800 uppercase tracking-wider">
+                — Isabel "Belinha" Albuquerque, Mestra Costureira
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button
+                type="button"
+                data-nav-page="catalogo"
+                class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold uppercase tracking-widest px-6 py-3 rounded-full transition"
+              >
+                Ver Catálogo de Serviços &rarr;
+              </button>
+              <button
+                type="button"
+                data-nav-page="nova-os"
+                class="bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-300 text-xs font-semibold uppercase tracking-widest px-6 py-3 rounded-full transition"
+              >
+                Abrir Ordem de Serviço
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Pilares do Ateliê -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white border-2 border-pink-100 rounded-2xl p-6 text-center shadow-xs">
+            <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mx-auto mb-4 font-bold text-lg">
+              01
+            </div>
+            <h3 class="font-calligraphy text-3xl text-pink-600 mb-2">Triagem Cuidadosa</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Inspeção detalhada de costuras, forros, pedrarias e fechos no ato do recebimento, com foto anexada e termo de ciência.
+            </p>
+          </div>
+
+          <div class="bg-white border-2 border-sky-100 rounded-2xl p-6 text-center shadow-xs">
+            <div class="w-12 h-12 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center mx-auto mb-4 font-bold text-lg">
+              02
+            </div>
+            <h3 class="font-calligraphy text-3xl text-sky-600 mb-2">Orçamento Justo</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Cálculo exato conforme a complexidade do tecido, opção de higienização a vapor e atendimento expresso sob medida.
+            </p>
+          </div>
+
+          <div class="bg-white border-2 border-pink-100 rounded-2xl p-6 text-center shadow-xs">
+            <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mx-auto mb-4 font-bold text-lg">
+              03
+            </div>
+            <h3 class="font-calligraphy text-3xl text-pink-600 mb-2">Prova Presencial</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Acompanhamento de cada etapa: da aprovação ao momento da prova no espelho até a retirada da peça impecável.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- PÁGINA 3: CATÁLOGO & TECIDOS (page-catalogo)                        -->
+    <!-- =================================================================== -->
+    <section id="page-catalogo" data-page-section="catalogo" class="hidden pastel-gradient-bg py-12 md:py-20">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-8 space-y-12">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white border-2 border-pink-100 rounded-3xl p-6 sm:p-10 shadow-xs">
+          <div>
+            <span class="inline-block px-3.5 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold uppercase tracking-widest mb-2">
+              TABELA DE SERVIÇOS &amp; MULTIPLICADORES
+            </span>
+            <h1 class="font-calligraphy text-5xl sm:text-6xl text-pink-600">
+              Catálogo de Serviços do Ateliê
+            </h1>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 max-w-md">
+            Selecione uma categoria abaixo ou clique em <strong>"Incluir na OS +"</strong> para enviar o serviço diretamente para a página de abertura de Ordem de Serviço.
+          </p>
+        </div>
+
+        <!-- Filtros de Categoria do Catálogo -->
+        <div id="catalog-filter-bar" class="flex flex-wrap items-center justify-center gap-2.5">
+          <button type="button" data-cat-filter="TODOS" class="cat-filter-btn bg-pink-600 text-white px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition">
+            Todos os Serviços
+          </button>
+          <button type="button" data-cat-filter="BARRAS" class="cat-filter-btn bg-white text-slate-700 border border-pink-200 hover:bg-pink-50 px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition">
+            Alfaiataria &amp; Barras
+          </button>
+          <button type="button" data-cat-filter="MODELAGEM" class="cat-filter-btn bg-white text-slate-700 border border-sky-200 hover:bg-sky-50 px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition">
+            Modelagem Corporal
+          </button>
+          <button type="button" data-cat-filter="AVIAMENTOS" class="cat-filter-btn bg-white text-slate-700 border border-pink-200 hover:bg-pink-50 px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition">
+            Zíperes &amp; Aviamentos
+          </button>
+          <button type="button" data-cat-filter="FESTA" class="cat-filter-btn bg-white text-slate-700 border border-sky-200 hover:bg-sky-50 px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition">
+            Noivas &amp; Alta Costura
+          </button>
+        </div>
+
+        <!-- Grid Dinâmico do Catálogo -->
+        <div id="catalog-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <!-- Tabela Comparativa de Multiplicadores de Tecido -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white border-2 border-sky-200 rounded-3xl p-6 sm:p-8 shadow-xs">
+            <span class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-semibold uppercase tracking-wider mb-2">
+              MULTIPLICADOR 1.00x
+            </span>
+            <h3 class="font-calligraphy text-4xl text-sky-700 mb-3">
+              Tecidos Tradicionais
+            </h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+              Mantêm o valor base integral dos itens de serviço sem acréscimo de complexidade técnica:
+            </p>
+            <div class="grid grid-cols-2 gap-2.5 text-xs font-medium text-sky-900">
+              <div class="bg-sky-50 border border-sky-200 rounded-xl px-3.5 py-2.5">✦ ALGODÃO (1.00x)</div>
+              <div class="bg-sky-50 border border-sky-200 rounded-xl px-3.5 py-2.5">✦ JEANS / SARJA (1.00x)</div>
+              <div class="bg-sky-50 border border-sky-200 rounded-xl px-3.5 py-2.5">✦ POLIÉSTER (1.00x)</div>
+              <div class="bg-sky-50 border border-sky-200 rounded-xl px-3.5 py-2.5">✦ OUTROS SIMPLES (1.00x)</div>
+            </div>
+          </div>
+
+          <div class="bg-white border-2 border-pink-200 rounded-3xl p-6 sm:p-8 shadow-xs">
+            <span class="inline-block px-3 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-semibold uppercase tracking-wider mb-2">
+              MULTIPLICADOR 1.40x
+            </span>
+            <h3 class="font-calligraphy text-4xl text-pink-700 mb-3">
+              Tecidos Nobres &amp; Complexos
+            </h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+              Exigem agulhas especiais, manuseio artesanal e reconstrução delicada de bordados ou forros:
+            </p>
+            <div class="grid grid-cols-2 gap-2.5 text-xs font-medium text-pink-900">
+              <div class="bg-pink-50 border border-pink-200 rounded-xl px-3.5 py-2.5">✦ SEDA PURA (1.40x)</div>
+              <div class="bg-pink-50 border border-pink-200 rounded-xl px-3.5 py-2.5">✦ COURO (1.40x)</div>
+              <div class="bg-pink-50 border border-pink-200 rounded-xl px-3.5 py-2.5">✦ VELUDO (1.40x)</div>
+              <div class="bg-pink-50 border border-pink-200 rounded-xl px-3.5 py-2.5">✦ PEDRARIAS / RENDA (1.40x)</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- PÁGINA 4: NOVA OS / TRIAGEM (page-nova-os)                          -->
+    <!-- =================================================================== -->
+    <section id="page-nova-os" data-page-section="nova-os" class="hidden pastel-gradient-bg py-12 md:py-16">
+      <div class="max-w-[1140px] mx-auto px-4 sm:px-8">
+        <div class="bg-white border-2 border-pink-200 rounded-3xl shadow-lg p-6 sm:p-10">
+          
+          <div class="border-b border-pink-100 pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="inline-block px-3.5 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold uppercase tracking-widest mb-2">
+                TRIAGEM FOTOGRÁFICA &amp; ORÇAMENTO DETERMINÍSTICO
+              </span>
+              <h1 class="font-calligraphy text-5xl sm:text-6xl text-pink-600">
+                Nova Ordem de Serviço
+              </h1>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-medium bg-sky-50 border border-sky-200 text-sky-800 px-3.5 py-1.5 rounded-full">
+                Cálculo Automático • Validade 7 Dias
+              </span>
+              <button
+                type="button"
+                data-nav-page="painel-os"
+                class="text-xs font-semibold text-pink-700 hover:underline px-2 py-1"
+              >
+                Ver Ordens Cadastradas &rarr;
+              </button>
+            </div>
+          </div>
+
+          <form id="os-create-form" class="space-y-8" novalidate>
+            <!-- Dados do Cliente e Peça -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div>
+                <label for="input-cliente-nome" class="block text-xs font-semibold uppercase tracking-wider text-pink-700 mb-2">
+                  Nome da Cliente *
+                </label>
+                <input
+                  id="input-cliente-nome"
+                  type="text"
+                  value="Helena Albuquerque Prado"
+                  placeholder="Nome completo"
+                  class="w-full border border-pink-200 rounded-xl px-3.5 py-2.5 text-sm focus:border-pink-500 focus:outline-none bg-pink-50/20"
+                />
+              </div>
+
+              <div>
+                <label for="input-cliente-telefone" class="block text-xs font-semibold uppercase tracking-wider text-pink-700 mb-2">
+                  WhatsApp / Telefone *
+                </label>
+                <input
+                  id="input-cliente-telefone"
+                  type="tel"
+                  value="(31) 99412-8890"
+                  placeholder="(31) 99999-0000"
+                  class="w-full border border-pink-200 rounded-xl px-3.5 py-2.5 text-sm focus:border-pink-500 focus:outline-none bg-pink-50/20"
+                />
+              </div>
+
+              <div>
+                <label for="input-descricao-peca" class="block text-xs font-semibold uppercase tracking-wider text-sky-700 mb-2">
+                  Descrição da Peça *
+                </label>
+                <input
+                  id="input-descricao-peca"
+                  type="text"
+                  value="Vestido Longo Seda Italiana Rosa Quartzo"
+                  placeholder="Ex.: Vestido de Festa em Seda"
+                  class="w-full border border-sky-200 rounded-xl px-3.5 py-2.5 text-sm focus:border-sky-500 focus:outline-none bg-sky-50/20"
+                />
+              </div>
+
+              <div>
+                <label for="select-tipo-tecido" class="block text-xs font-semibold uppercase tracking-wider text-sky-700 mb-2">
+                  Tipo de Tecido *
+                </label>
+                <select
+                  id="select-tipo-tecido"
+                  class="w-full border border-sky-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:border-sky-500 focus:outline-none"
+                >
+                  <optgroup label="Tecidos Complexos (Multiplicador 1.40x)">
+                    <option value="SEDA" selected>SEDA — Seda Pura (1.40x)</option>
+                    <option value="COURO">COURO — Couro Natural/Eco (1.40x)</option>
+                    <option value="VELUDO">VELUDO — Veludo Alemão (1.40x)</option>
+                    <option value="PEDRARIAS">PEDRARIAS — Renda &amp; Pedrarias (1.40x)</option>
+                  </optgroup>
+                  <optgroup label="Tecidos Tradicionais (Multiplicador 1.00x)">
+                    <option value="ALGODAO">ALGODAO — Algodão (1.00x)</option>
+                    <option value="JEANS">JEANS — Jeans / Sarja (1.00x)</option>
+                    <option value="POLIESTER">POLIESTER — Poliéster / Crepe (1.00x)</option>
+                    <option value="OUTROS">OUTROS — Outros Tecidos (1.00x)</option>
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+
+            <!-- Prazo (<48h Urgência) e Taxa de Higienização -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 bg-gradient-to-r from-pink-50/70 via-white to-sky-50/70 p-5 rounded-2xl border border-pink-200">
+              <div>
+                <label for="input-prazo-horas" class="block text-xs font-semibold uppercase tracking-wider text-pink-700 mb-2">
+                  Prazo de Entrega (Horas)
+                </label>
+                <div class="flex items-center gap-2.5">
+                  <input
+                    id="input-prazo-horas"
+                    type="number"
+                    min="1"
+                    max="720"
+                    value="36"
+                    class="w-24 border border-pink-300 rounded-xl px-3 py-2 text-sm bg-white font-mono"
+                  />
+                  <div class="flex gap-1.5">
+                    <button type="button" data-set-hours="24" class="text-[11px] px-3 py-1.5 rounded-full border border-pink-300 bg-white text-pink-700 hover:bg-pink-50 font-medium">24h (Urgente)</button>
+                    <button type="button" data-set-hours="72" class="text-[11px] px-3 py-1.5 rounded-full border border-sky-300 bg-white text-sky-700 hover:bg-sky-50 font-medium">72h (Normal)</button>
+                  </div>
+                </div>
+                <p id="urgencia-status-badge" class="text-[11px] font-medium text-pink-700 mt-2">
+                  ⚡ Prazo &lt; 48h detectado: Taxa de Urgência (+30% sobre Subtotal Tecido) ativa.
+                </p>
+              </div>
+
+              <div class="flex items-center">
+                <label class="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    id="check-taxa-higienizacao"
+                    type="checkbox"
+                    checked
+                    class="mt-1 h-4 w-4 accent-pink-600"
+                  />
+                  <span class="text-sm">
+                    <strong class="block font-semibold text-slate-800">Incluir Taxa de Higienização (+ R$ 35,00)</strong>
+                    <span class="text-xs text-slate-500">Higienização delicada e vaporização final antes da entrega.</span>
+                  </span>
+                </label>
+              </div>
+
+              <div class="flex items-center">
+                <label class="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    id="check-emitir-orcamento"
+                    type="checkbox"
+                    checked
+                    class="mt-1 h-4 w-4 accent-sky-600"
+                  />
+                  <span class="text-sm">
+                    <strong class="block font-semibold text-slate-800">Emitir Orçamento Imediato (`ORCADA`)</strong>
+                    <span class="text-xs text-slate-500">Valida a trava obrigatória de vistoria (<code class="font-mono">RN-TRI-001</code>) na abertura.</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Lista de Itens de Serviço -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="font-calligraphy text-3xl sm:text-4xl text-sky-700">
+                  Itens de Costura e Ajuste
+                </h2>
+                <span id="itens-count-label" class="text-xs font-mono bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-full">2 itens adicionados</span>
+              </div>
+
+              <div id="os-items-container" class="space-y-2.5 mb-4"></div>
+
+              <!-- Adicionar Novo Item -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-sky-50/60 p-4 rounded-2xl border border-sky-200">
+                <div class="sm:col-span-5">
+                  <input
+                    id="input-novo-item-nome"
+                    type="text"
+                    placeholder="Descrição do serviço (ex.: Ajuste de Alças e Decote)"
+                    class="w-full border border-sky-200 rounded-xl px-3.5 py-2 text-sm bg-white"
+                  />
+                </div>
+                <div class="sm:col-span-4">
+                  <input
+                    id="input-novo-item-detalhes"
+                    type="text"
+                    placeholder="Detalhes de acabamento"
+                    class="w-full border border-sky-200 rounded-xl px-3.5 py-2 text-sm bg-white"
+                  />
+                </div>
+                <div class="sm:col-span-2">
+                  <input
+                    id="input-novo-item-valor"
+                    type="number"
+                    step="0.50"
+                    min="1"
+                    value="65.00"
+                    placeholder="Valor R$"
+                    class="w-full border border-sky-200 rounded-xl px-3.5 py-2 text-sm bg-white font-mono"
+                  />
+                </div>
+                <div class="sm:col-span-1">
+                  <button
+                    id="btn-add-item"
+                    type="button"
+                    class="w-full h-full bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold uppercase tracking-wider py-2 px-3 rounded-xl transition"
+                  >
+                    + Item
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Checklist Obrigatório de Avarias + Upload com Compressão Local -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-pink-100 pt-8">
+              
+              <!-- Coluna 1: Checklist de Avarias -->
+              <div>
+                <h2 class="font-calligraphy text-3xl sm:text-4xl text-pink-600 mb-3">
+                  Checklist de Vistoria da Peça
+                </h2>
+                <div class="space-y-2.5 bg-pink-50/40 p-5 rounded-2xl border border-pink-200 text-sm">
+                  <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input id="avaria-manchas" type="checkbox" class="h-4 w-4 accent-pink-600" />
+                    <span>Manchas ou alteração de tonalidade pré-existentes</span>
+                  </label>
+                  <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input id="avaria-fios" type="checkbox" checked class="h-4 w-4 accent-pink-600" />
+                    <span>Fios puxados delicados ou microfuros na barra</span>
+                  </label>
+                  <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input id="avaria-forro" type="checkbox" class="h-4 w-4 accent-pink-600" />
+                    <span>Desgaste na costura interna ou forro esgarçado</span>
+                  </label>
+                  <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input id="avaria-botoes" type="checkbox" class="h-4 w-4 accent-pink-600" />
+                    <span>Pedrarias soltas, colchetes ou botões faltantes</span>
+                  </label>
+                  <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input id="avaria-ziper" type="checkbox" class="h-4 w-4 accent-pink-600" />
+                    <span>Zíper com travamento ou dente desalinhado</span>
+                  </label>
+                </div>
+
+                <div class="mt-4">
+                  <label for="input-obs-triagem" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                    Observações de Recepção
+                  </label>
+                  <textarea
+                    id="input-obs-triagem"
+                    rows="2"
+                    class="w-full border border-pink-200 rounded-xl p-3 text-sm focus:border-pink-500 focus:outline-none"
+                  >Leve fio puxado próximo à bainha traseira registrado em foto na presença da cliente.</textarea>
+                </div>
+
+                <label class="mt-4 flex items-start gap-3 p-4 rounded-2xl border-2 border-pink-300 bg-pink-50/70 cursor-pointer select-none">
+                  <input
+                    id="check-termo-avarias"
+                    type="checkbox"
+                    checked
+                    class="mt-1 h-4 w-4 accent-pink-600"
+                  />
+                  <span class="text-xs text-slate-800 leading-relaxed">
+                    <strong class="block text-pink-800 uppercase tracking-wider mb-0.5">
+                      Termo de Vistoria Aceito (`termo_avarias_aceito = True`) — RN-TRI-001
+                    </strong>
+                    Declaro que a peça foi inspecionada na recepção e que as avarias e fotos anexadas foram validadas com a cliente.
+                  </span>
+                </label>
+              </div>
+
+              <!-- Coluna 2: Upload com Compressão Local -->
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <h2 class="font-calligraphy text-3xl sm:text-4xl text-sky-700">
+                    Fotografias da Peça
+                  </h2>
+                  <span id="fotos-count-badge" class="text-xs font-mono px-3 py-1 rounded-full bg-sky-100 text-sky-900 border border-sky-300">
+                    1 foto pronta
+                  </span>
+                </div>
+
+                <div class="border-2 border-dashed border-sky-300 rounded-2xl p-6 text-center bg-sky-50/40">
+                  <input
+                    id="input-upload-foto"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    class="hidden"
+                  />
+                  <div class="flex flex-wrap items-center justify-center gap-3">
+                    <label
+                      for="input-upload-foto"
+                      class="inline-block bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold uppercase tracking-widest px-5 py-3 rounded-full cursor-pointer transition shadow-xs"
+                    >
+                      Enviar Foto da Peça (JPG/PNG/WEBP) +
+                    </label>
+                    <button
+                      id="btn-gerar-foto-demo"
+                      type="button"
+                      class="border-2 border-sky-400 bg-white text-sky-800 text-xs font-semibold uppercase tracking-wider px-4 py-2.5 rounded-full hover:bg-sky-50 transition"
+                    >
+                      Gerar Foto de Teste (1-Clique)
+                    </button>
+                  </div>
+                  <p id="compression-status-text" class="text-xs text-slate-500 mt-3">
+                    Compressão automática local via <code class="font-mono text-pink-700">browser-image-compression</code>.
+                  </p>
+                </div>
+
+                <div id="fotos-preview-list" class="mt-4 space-y-2.5 max-h-60 overflow-y-auto custom-scrollbar"></div>
+              </div>
+
+            </div>
+
+            <!-- Painel de Cálculo Financeiro Determinístico em Rosa, Azul e Branco -->
+            <div class="bg-gradient-to-r from-pink-50 via-white to-sky-50 border-2 border-pink-300 rounded-3xl p-6 md:p-8 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-pink-200 pb-4 mb-5 gap-2">
+                <span class="font-calligraphy text-3xl text-pink-700">
+                  Resumo Determinístico do Orçamento
+                </span>
+                <span id="formula-live-expression" class="text-xs font-mono bg-white border border-sky-200 text-sky-800 px-3 py-1.5 rounded-full"></span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 pb-6 border-b border-pink-200">
+                <div class="bg-white border border-pink-100 rounded-2xl p-3">
+                  <span class="text-[11px] uppercase tracking-wider text-slate-500 block">Subtotal Base</span>
+                  <span id="calc-subtotal-base" class="font-mono text-base font-semibold text-slate-800">R$ 0,00</span>
+                </div>
+                <div class="bg-white border border-pink-100 rounded-2xl p-3">
+                  <span class="text-[11px] uppercase tracking-wider text-slate-500 block">Mult. Tecido</span>
+                  <span id="calc-multiplicador" class="font-mono text-base font-semibold text-pink-600">1.40x</span>
+                </div>
+                <div class="bg-white border border-sky-100 rounded-2xl p-3">
+                  <span class="text-[11px] uppercase tracking-wider text-slate-500 block">Subtotal Tecido</span>
+                  <span id="calc-subtotal-tecido" class="font-mono text-base font-semibold text-sky-800">R$ 0,00</span>
+                </div>
+                <div class="bg-white border border-sky-100 rounded-2xl p-3">
+                  <span class="text-[11px] uppercase tracking-wider text-slate-500 block">Higienização</span>
+                  <span id="calc-taxa-higienizacao" class="font-mono text-base font-semibold text-slate-800">R$ 35,00</span>
+                </div>
+                <div class="bg-white border border-pink-100 rounded-2xl p-3">
+                  <span class="text-[11px] uppercase tracking-wider text-slate-500 block">Urgência (&lt;48h)</span>
+                  <span id="calc-taxa-urgencia" class="font-mono text-base font-semibold text-pink-700">R$ 0,00</span>
+                </div>
+                <div class="bg-gradient-to-br from-pink-600 to-sky-600 text-white rounded-2xl p-3 shadow-xs">
+                  <span class="text-[11px] uppercase tracking-wider text-pink-100 block font-semibold">Valor Total</span>
+                  <span id="calc-valor-total" class="font-mono text-xl font-bold text-white">R$ 0,00</span>
+                </div>
+              </div>
+
+              <div class="pt-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1 text-xs text-slate-700">
+                  <p id="calc-sinal-notice"></p>
+                  <p id="calc-triagem-notice" class="text-slate-500"></p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                  <button
+                    id="btn-submit-os"
+                    type="submit"
+                    class="bg-pink-600 hover:bg-pink-700 text-white text-xs uppercase tracking-widest font-semibold px-8 py-4 rounded-full shadow-md transition"
+                  >
+                    Registrar Ordem de Serviço +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- PÁGINA 5: PAINEL DE ORDENS / MÁQUINA DE ESTADOS (page-painel-os)     -->
+    <!-- =================================================================== -->
+    <section id="page-painel-os" data-page-section="painel-os" class="hidden pastel-gradient-bg py-12 md:py-16">
+      <div class="max-w-[1220px] mx-auto px-4 sm:px-8 space-y-8">
+        
+        <div class="bg-white border-2 border-sky-200 rounded-3xl p-6 sm:p-10 shadow-xs flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span class="inline-block px-3.5 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-semibold uppercase tracking-widest mb-2">
+              CONTROLE DE BANCADA • TRANSIÇÕES DE STATUS &amp; PAGAMENTOS
+            </span>
+            <h1 class="font-calligraphy text-5xl sm:text-6xl text-pink-600">
+              Painel de Ordens de Serviço
+            </h1>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              data-nav-page="nova-os"
+              class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold uppercase tracking-wider px-5 py-2.5 rounded-full transition shadow-xs"
+            >
+              + Abrir Nova OS
+            </button>
+            <button
+              id="btn-reset-demo-data"
+              type="button"
+              class="text-xs font-semibold uppercase tracking-wider border border-sky-300 bg-sky-50 text-sky-800 px-4 py-2.5 rounded-full hover:bg-sky-100 transition"
+            >
+              Restaurar Exemplos
+            </button>
+          </div>
+        </div>
+
+        <!-- Barra de Busca e Filtros da Máquina de Estados (StatusOS) -->
+        <div class="bg-white border-2 border-pink-100 rounded-3xl p-5 shadow-xs space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p class="text-xs font-semibold uppercase tracking-widest text-pink-700">
+              FILTRAR POR ETAPA DA MÁQUINA DE ESTADOS (`StatusOS`)
+            </p>
+            <input
+              id="input-search-os"
+              type="search"
+              placeholder="Buscar por cliente, peça ou protocolo (ex.: BEL-2026)..."
+              class="w-full sm:w-80 border border-sky-200 rounded-full px-4 py-2 text-xs focus:border-pink-500 focus:outline-none bg-sky-50/30"
+            />
+          </div>
+          <div id="status-filter-bar" class="flex flex-wrap items-center gap-2"></div>
+        </div>
+
+        <!-- Grid de Cards de Ordens de Serviço -->
+        <div id="os-cards-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RODAPÉ DELICADO EM ROSA, AZUL E BRANCO -->
+  <footer class="bg-white border-t border-pink-200 mt-auto">
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="font-calligraphy text-3xl text-pink-600">Ateliê da Belinha</span>
+        <span class="text-xs text-slate-400">• Alta Costura, Reforma &amp; Ajustes Finos</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-sky-700">
+        <button type="button" data-nav-page="inicio" class="hover:text-pink-600 transition">Início</button>
+        <button type="button" data-nav-page="sobre" class="hover:text-pink-600 transition">Sobre o Ateliê</button>
+        <button type="button" data-nav-page="catalogo" class="hover:text-pink-600 transition">Catálogo</button>
+        <button type="button" data-nav-page="nova-os" class="hover:text-pink-600 transition">Nova OS</button>
+        <button type="button" data-nav-page="painel-os" class="hover:text-pink-600 transition">Painel de Ordens</button>
+      </div>
+    </div>
+    <div class="h-1.5 w-full ribbon-border"></div>
+  </footer>
+
+  <!-- LÓGICA DE NAVEGAÇÃO MULTI-PÁGINAS E DOMÍNIO DETERMINÍSTICO -->
+  <script>
+    (function () {
+      const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
+      const TECIDOS_COMPLEXOS = new Set(["COURO", "SEDA", "VELUDO", "PEDRARIAS"]);
+
+      const PAGE_TITLES = {
+        "inicio": "Página Inicial",
+        "sobre": "Sobre o Ateliê",
+        "catalogo": "Catálogo de Serviços & Tecidos",
+        "nova-os": "Nova Ordem de Serviço (Triagem)",
+        "painel-os": "Painel de Ordens & Máquina de Estados"
+      };
+
+      const CATALOG_ITEMS = [
+        {
+          id: "cat-1",
+          categoria: "BARRAS",
+          categoria_label: "Alfaiataria & Barras",
+          nome: "Bainha Invisível de Alta Costura",
+          detalhes: "Ponto invisível manual preservando a queda original em sedas, crepes e alfaiataria.",
+          preco: 55.00,
+          cor: "pink"
+        },
+        {
+          id: "cat-2",
+          categoria: "BARRAS",
+          categoria_label: "Alfaiataria & Barras",
+          nome: "Bainha de Lenço em Musseline ou Seda",
+          detalhes: "Acabamento ultrafino para saias godê, vestidos fluidos de festa e echarpes.",
+          preco: 78.00,
+          cor: "sky"
+        },
+        {
+          id: "cat-3",
+          categoria: "MODELAGEM",
+          categoria_label: "Modelagem Corporal",
+          nome: "Ajuste de Cintura & Pences Laterais",
+          detalhes: "Acinturamento bilateral com reconstrução de forro e pesponto original.",
+          preco: 95.00,
+          cor: "pink"
+        },
+        {
+          id: "cat-4",
+          categoria: "MODELAGEM",
+          categoria_label: "Modelagem Corporal",
+          nome: "Ajuste de Ombro, Cava e Comprimento de Manga",
+          detalhes: "Redefinição de encaixe de ombro em blazers, camisas de seda e casacos.",
+          preco: 115.00,
+          cor: "sky"
+        },
+        {
+          id: "cat-5",
+          categoria: "AVIAMENTOS",
+          categoria_label: "Zíperes & Aviamentos",
+          nome: "Substituição de Zíper Invisível Nobre",
+          detalhes: "Remoção delicada e aplicação de zíper invisível de alta resistência na cor exata.",
+          preco: 68.00,
+          cor: "pink"
+        },
+        {
+          id: "cat-6",
+          categoria: "AVIAMENTOS",
+          categoria_label: "Zíperes & Aviamentos",
+          nome: "Aplicação de Botões Forrados & Aselhas",
+          detalhes: "Confecção artesanal de botões forrados no próprio tecido e aselhas de seda.",
+          preco: 85.00,
+          cor: "sky"
+        },
+        {
+          id: "cat-7",
+          categoria: "FESTA",
+          categoria_label: "Noivas & Alta Costura",
+          nome: "Reforma Completa de Busto & Corset",
+          detalhes: "Ajuste estrutural de decote, aplicação de bojo e alinhamento de barbatanas.",
+          preco: 160.00,
+          cor: "pink"
+        },
+        {
+          id: "cat-8",
+          categoria: "FESTA",
+          categoria_label: "Noivas & Alta Costura",
+          nome: "Restauração de Bordados em Renda & Pedrarias",
+          detalhes: "Rebordado manual de pérolas, cristais e miçangas após ajuste de medida.",
+          preco: 190.00,
+          cor: "sky"
+        }
+      ];
+
+      const STATUS_BADGE_STYLES = {
+        CRIADA: "bg-slate-100 text-slate-700 border-slate-300",
+        ORCADA: "bg-sky-100 text-sky-800 border-sky-300",
+        APROVADA: "bg-pink-100 text-pink-800 border-pink-300",
+        EM_COSTURA: "bg-rose-100 text-rose-800 border-rose-300",
+        PRONTA_PARA_PROVA: "bg-indigo-100 text-indigo-800 border-indigo-300",
+        PRONTA_PARA_RETIRADA: "bg-cyan-100 text-cyan-800 border-cyan-300",
+        FINALIZADA: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        CANCELADA: "bg-red-100 text-red-800 border-red-300"
+      };
+
+      const TRANSICOES_PERMITIDAS = {
+        CRIADA: ["ORCADA", "CANCELADA"],
+        ORCADA: ["APROVADA", "CANCELADA"],
+        APROVADA: ["EM_COSTURA", "CANCELADA"],
+        EM_COSTURA: ["PRONTA_PARA_PROVA", "PRONTA_PARA_RETIRADA"],
+        PRONTA_PARA_PROVA: ["EM_COSTURA", "PRONTA_PARA_RETIRADA"],
+        PRONTA_PARA_RETIRADA: ["FINALIZADA"],
+        FINALIZADA: [],
+        CANCELADA: []
+      };
+
+      let currentPage = "inicio";
+      let activeCatalogCategory = "TODOS";
+      let activeStatusFilter = "TODAS";
+      let searchQueryOS = "";
+
+      // Arredondamento determinístico ROUND_HALF_UP
+      function roundHalfUp(num) {
+        const val = Number(num) || 0;
+        const sign = val < 0 ? -1 : 1;
+        const abs = Math.abs(val);
+        return (sign * Math.floor(abs * 100 + 0.5 + 1e-9)) / 100;
+      }
+
+      function formatBRL(num) {
+        return "R$ " + roundHalfUp(num).toFixed(2).replace(".", ",");
+      }
+
+      function calcularOrcamentoDeterministico(itens, tipoTecido, taxaHigienizacaoAtiva, prazoHoras) {
+        const subtotalBase = roundHalfUp(
+          itens.reduce(function (acc, item) {
+            return acc + roundHalfUp(item.valor_base);
+          }, 0)
+        );
+        const multiplicador = TECIDOS_COMPLEXOS.has(tipoTecido) ? 1.40 : 1.00;
+        const subtotalTecido = roundHalfUp(subtotalBase * multiplicador);
+        const taxaHigienizacao = taxaHigienizacaoAtiva ? 35.00 : 0.00;
+        const urgente = Number(prazoHoras) > 0 && Number(prazoHoras) < 48;
+        const taxaUrgencia = urgente ? roundHalfUp(subtotalTecido * 0.30) : 0.00;
+        const taxasAdicionais = roundHalfUp(taxaHigienizacao + taxaUrgencia);
+        const valorTotal = roundHalfUp(subtotalTecido + taxasAdicionais);
+        const sinalMinimo = valorTotal > 80.00 ? roundHalfUp(valorTotal * 0.50) : 0.00;
+
+        return {
+          subtotal_base: subtotalBase,
+          multiplicador_aplicado: multiplicador,
+          subtotal_tecido: subtotalTecido,
+          taxa_higienizacao_valor: taxaHigienizacao,
+          taxa_urgencia_valor: taxaUrgencia,
+          taxas_adicionais: taxasAdicionais,
+          valor_total: valorTotal,
+          sinal_minimo_exigido: sinalMinimo,
+          urgente: urgente
+        };
+      }
+
+      // Navegação entre páginas exclusivas do menu
+      function navegarParaPagina(pageKey) {
+        if (!PAGE_TITLES[pageKey]) pageKey = "inicio";
+        currentPage = pageKey;
+
+        document.querySelectorAll("[data-page-section]").forEach(function (sec) {
+          if (sec.getAttribute("data-page-section") === pageKey) {
+            sec.classList.remove("hidden");
+          } else {
+            sec.classList.add("hidden");
+          }
+        });
+
+        document.querySelectorAll(".nav-tab-btn").forEach(function (btn) {
+          const target = btn.getAttribute("data-nav-page");
+          if (target === pageKey) {
+            btn.className = "nav-tab-btn px-4 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition bg-gradient-to-r from-pink-500 to-sky-500 text-white shadow-xs";
+          } else {
+            btn.className = "nav-tab-btn px-4 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition text-slate-600 hover:bg-pink-50 hover:text-pink-700";
+          }
+        });
+
+        const bc = document.getElementById("breadcrumb-current-page");
+        if (bc) bc.textContent = PAGE_TITLES[pageKey];
+
+        const drawer = document.getElementById("mobile-menu-drawer");
+        if (drawer) drawer.classList.add("hidden");
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Estado do Formulário OSCreateForm
+      let formItems = [
+        {
+          id: "item-1",
+          nome_servico: "Ajuste de Cintura & Pences Laterais",
+          detalhes_execucao: "Acinturamento invisível lateral em seda pura",
+          valor_base: 95.00
+        },
+        {
+          id: "item-2",
+          nome_servico: "Bainha Invisível de Alta Costura",
+          detalhes_execucao: "Preservar caimento fluido original",
+          valor_base: 55.00
+        }
+      ];
+
+      let formPhotos = [];
+
+      // Gera miniatura sintética em Rosa, Azul e Branco para inspeção de peça
+      function criarFotoSinteticaDataUrl(label) {
+        const canvas = document.createElement("canvas");
+        canvas.width = 480;
+        canvas.height = 360;
+        const ctx = canvas.getContext("2d");
+        const grad = ctx.createLinearGradient(0, 0, 480, 360);
+        grad.addColorStop(0, "#FDF2F8");
+        grad.addColorStop(0.5, "#FFFFFF");
+        grad.addColorStop(1, "#E0F2FE");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 480, 360);
+        ctx.strokeStyle = "#F472B6";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(18, 18, 444, 324);
+        ctx.fillStyle = "#BE185D";
+        ctx.font = "600 17px Inter, sans-serif";
+        ctx.fillText("ATELIÊ DA BELINHA • VISTORIA RN-TRI-001", 36, 58);
+        ctx.font = "13px monospace";
+        ctx.fillStyle = "#0369A1";
+        ctx.fillText(label || "Inspeção Fotográfica de Entrada", 36, 92);
+        // Silhueta de vestido
+        ctx.strokeStyle = "#0284C7";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(195, 128);
+        ctx.lineTo(285, 128);
+        ctx.lineTo(325, 290);
+        ctx.lineTo(155, 290);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fillStyle = "#EC4899";
+        ctx.beginPath();
+        ctx.arc(265, 235, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#1E293B";
+        ctx.font = "12px monospace";
+        ctx.fillText("Registro fotográfico validado", 160, 322);
+        return canvas.toDataURL("image/jpeg", 0.82);
+      }
+
+      function inicializarFotoDemoFormulario() {
+        const dataUrl = criarFotoSinteticaDataUrl("Vestido Seda Rosa Quartzo - Bainha");
+        formPhotos = [
+          {
+            id: "foto-init-1",
+            nome_original: "vistoria_vestido_seda_rosa.jpg",
+            mime_type: "image/jpeg",
+            tamanho_original_bytes: 1482000,
+            tamanho_comprimido_bytes: 164800,
+            preview_url: dataUrl
+          }
+        ];
+      }
+
+      function obterOrdensIniciais() {
+        const fotoPadrao = criarFotoSinteticaDataUrl("Registro Fotográfico de Recepção");
+        return [
+          {
+            id: "os-demo-1",
+            codigo_protocolo: "BEL-202610-A101",
+            cliente_nome: "Camila Queiroz Bernardes",
+            cliente_telefone: "(31) 99811-2200",
+            descricao_peca: "Blazer Alfaiataria Veludo Azul Celeste",
+            tipo_tecido: "VELUDO",
+            status: "CRIADA",
+            taxa_higienizacao_ativa: false,
+            prazo_entrega_horas: 72,
+            termo_avarias_aceito: false,
+            observacoes_triagem: "Aguardando assinatura do termo de vistoria e foto para liberar orçamento.",
+            itens: [
+              { nome_servico: "Ajuste de Ombro e Comprimento de Manga", detalhes_execucao: "Preservar botões forrados", valor_base: 120.00 }
+            ],
+            fotos_count: 0,
+            foto_preview: fotoPadrao,
+            valor_pago: 0.00,
+            validade_orcamento: "Aguardando emissão",
+            historico: [
+              { de: "—", para: "CRIADA", motivo: "Recepção inicial no balcão (sem foto/termo ainda)" }
+            ]
+          },
+          {
+            id: "os-demo-2",
+            codigo_protocolo: "BEL-202610-B204",
+            cliente_nome: "Beatriz Andrade Meireles",
+            cliente_telefone: "(31) 99104-5531",
+            descricao_peca: "Vestido de Festa Renda & Pedrarias Rosa Blush",
+            tipo_tecido: "PEDRARIAS",
+            status: "APROVADA",
+            taxa_higienizacao_ativa: true,
+            prazo_entrega_horas: 36,
+            termo_avarias_aceito: true,
+            observacoes_triagem: "Pedrarias conferidas na cintura. Cliente aprovou orçamento urgente.",
+            itens: [
+              { nome_servico: "Reforma Completa de Busto & Corset", detalhes_execucao: "Ajuste de decote e forro", valor_base: 160.00 },
+              { nome_servico: "Bainha Especial em Renda Bordada", detalhes_execucao: "Recorte manual do barrado", valor_base: 80.00 }
+            ],
+            fotos_count: 2,
+            foto_preview: fotoPadrao,
+            valor_pago: 0.00,
+            validade_orcamento: "04/11/2026 (7 dias)",
+            historico: [
+              { de: "CRIADA", para: "ORCADA", motivo: "RN-TRI-001 validado (2 fotos + termo aceito)" },
+              { de: "ORCADA", para: "APROVADA", motivo: "Cliente aprovou orçamento; aguardando sinal de 50% (RN-FIN-001)" }
+            ]
+          },
+          {
+            id: "os-demo-3",
+            codigo_protocolo: "BEL-202610-C309",
+            cliente_nome: "Fernanda Lima Cavalcanti",
+            cliente_telefone: "(31) 98744-1920",
+            descricao_peca: "Saia Midi Couro Ecológico Off-White",
+            tipo_tecido: "COURO",
+            status: "PRONTA_PARA_RETIRADA",
+            taxa_higienizacao_ativa: false,
+            prazo_entrega_horas: 96,
+            termo_avarias_aceito: true,
+            observacoes_triagem: "Couro hidratado sem marcas. Sinal de 50% pago na aprovação.",
+            itens: [
+              { nome_servico: "Ajuste de Cintura & Cós em Couro", detalhes_execucao: "Agulha especial para couro", valor_base: 110.00 },
+              { nome_servico: "Substituição de Zíper Invisível Nobre", detalhes_execucao: "Zíper invisível reforçado", valor_base: 65.00 }
+            ],
+            fotos_count: 1,
+            foto_preview: fotoPadrao,
+            valor_pago: 122.50,
+            validade_orcamento: "04/11/2026 (7 dias)",
+            historico: [
+              { de: "APROVADA", para: "EM_COSTURA", motivo: "Sinal de 50% (R$ 122,50) confirmado (RN-FIN-001)" },
+              { de: "EM_COSTURA", para: "PRONTA_PARA_RETIRADA", motivo: "Costura finalizada; aguardando quitação do saldo (RN-FIN-002)" }
+            ]
+          },
+          {
+            id: "os-demo-4",
+            codigo_protocolo: "BEL-202610-D412",
+            cliente_nome: "Patrícia Gontijo",
+            cliente_telefone: "(31) 99652-7711",
+            descricao_peca: "Camisa de Algodão Egípcio Azul Serenity",
+            tipo_tecido: "ALGODAO",
+            status: "EM_COSTURA",
+            taxa_higienizacao_ativa: false,
+            prazo_entrega_horas: 72,
+            termo_avarias_aceito: true,
+            observacoes_triagem: "Peça sem avarias. Valor <= R$ 80,00 dispensado de sinal prévio (RN-FIN-001).",
+            itens: [
+              { nome_servico: "Ajuste de Punho e Pences Traseiras", detalhes_execucao: "Costura francesa delicada", valor_base: 65.00 }
+            ],
+            fotos_count: 1,
+            foto_preview: fotoPadrao,
+            valor_pago: 0.00,
+            validade_orcamento: "04/11/2026 (7 dias)",
+            historico: [
+              { de: "APROVADA", para: "EM_COSTURA", motivo: "Valor Total R$ 65,00 (<= R$ 80,00): início liberado" }
+            ]
+          }
+        ];
+      }
+
+      let ordensList = [];
+
+      function carregarEstadoInicial() {
+        inicializarFotoDemoFormulario();
+        try {
+          const salvo = localStorage.getItem("atelie_belinha_os_v2");
+          if (salvo) {
+            const parsed = JSON.parse(salvo);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              ordensList = parsed;
+              return;
+            }
+          }
+        } catch (e) {
+          // Fallback em memória
+        }
+        ordensList = obterOrdensIniciais();
+      }
+
+      function salvarEstado() {
+        try {
+          localStorage.setItem("atelie_belinha_os_v2", JSON.stringify(ordensList));
+        } catch (e) {
+          // Ignora se bloqueado
+        }
+      }
+
+      // Toast Notification em Rosa e Azul
+      function mostrarToast(titulo, mensagem, tipo) {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+        const toast = document.createElement("div");
+        const borderClass =
+          tipo === "error"
+            ? "border-red-500 bg-white text-slate-800"
+            : tipo === "warning"
+            ? "border-pink-500 bg-white text-slate-800"
+            : "border-sky-500 bg-white text-slate-800";
+
+        toast.className =
+          "pointer-events-auto border-l-4 rounded-2xl p-4 shadow-xl border border-pink-100 transition-all duration-300 " +
+          borderClass;
+        toast.innerHTML =
+          '<div class="flex items-start justify-between gap-3">' +
+          '<div><p class="text-xs font-bold uppercase tracking-wider text-pink-600">' +
+          titulo +
+          '</p><p class="text-xs mt-1 leading-relaxed text-slate-600">' +
+          mensagem +
+          "</p></div>" +
+          '<button type="button" class="text-slate-400 hover:text-pink-600 text-sm">&times;</button>' +
+          "</div>";
+
+        const closeBtn = toast.querySelector("button");
+        closeBtn.addEventListener("click", function () {
+          toast.remove();
+        });
+
+        container.appendChild(toast);
+        setTimeout(function () {
+          if (toast.parentNode) toast.remove();
+        }, 5000);
+      }
+
+      // Modal de Exceção de Regra de Negócio
+      function abrirModalRegraNegocio(codigo, titulo, mensagem, formulaDetalhe) {
+        const modal = document.getElementById("guard-modal");
+        document.getElementById("guard-modal-badge").textContent =
+          "BLOQUEIO DE REGRA DE NEGÓCIO (" + codigo + ")";
+        document.getElementById("guard-modal-title").textContent = titulo;
+        document.getElementById("guard-modal-message").textContent = mensagem;
+        document.getElementById("guard-modal-formula").textContent = formulaDetalhe;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function fecharModalRegraNegocio() {
+        const modal = document.getElementById("guard-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      // Renderiza a Página de Catálogo
+      function renderCatalogPage() {
+        const grid = document.getElementById("catalog-cards-grid");
+        if (!grid) return;
+
+        const items = activeCatalogCategory === "TODOS"
+          ? CATALOG_ITEMS
+          : CATALOG_ITEMS.filter(function (c) { return c.categoria === activeCatalogCategory; });
+
+        grid.innerHTML = "";
+        items.forEach(function (item) {
+          const isPink = item.cor === "pink";
+          const card = document.createElement("div");
+          card.className =
+            "bg-white rounded-3xl p-6 shadow-xs flex flex-col justify-between transition border-2 " +
+            (isPink ? "border-pink-100 hover:border-pink-300" : "border-sky-100 hover:border-sky-300");
+
+          card.innerHTML =
+            '<div>' +
+            '<span class="inline-block px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider mb-3 ' +
+            (isPink ? "bg-pink-100 text-pink-700" : "bg-sky-100 text-sky-700") +
+            '">' + item.categoria_label + '</span>' +
+            '<h3 class="font-calligraphy text-3xl ' + (isPink ? "text-pink-700" : "text-sky-700") + ' mb-2">' +
+            item.nome +
+            '</h3>' +
+            '<p class="text-xs text-slate-600 leading-relaxed mb-5">' + item.detalhes + '</p>' +
+            '</div>' +
+            '<div class="pt-4 border-t border-pink-50 flex items-center justify-between">' +
+            '<div>' +
+            '<span class="text-[10px] uppercase text-slate-400 block">Valor Base</span>' +
+            '<span class="font-mono text-base font-bold text-slate-800">' + formatBRL(item.preco) + '</span>' +
+            '</div>' +
+            '<button type="button" data-catalog-select="' + item.id + '" class="text-xs font-semibold uppercase tracking-wider px-4 py-2.5 rounded-full text-white transition shadow-xs ' +
+            (isPink ? "bg-pink-600 hover:bg-pink-700" : "bg-sky-600 hover:bg-sky-700") +
+            '">Incluir na OS +</button>' +
+            '</div>';
+
+          grid.appendChild(card);
+        });
+
+        grid.querySelectorAll("[data-catalog-select]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const id = btn.getAttribute("data-catalog-select");
+            const item = CATALOG_ITEMS.find(function (c) { return c.id === id; });
+            if (!item) return;
+            formItems.push({
+              id: "item-" + Date.now() + "-" + Math.random().toString(36).slice(2, 5),
+              nome_servico: item.nome,
+              detalhes_execucao: item.detalhes,
+              valor_base: item.preco
+            });
+            renderFormItems();
+            atualizarPainelCalculoFormulario();
+            mostrarToast("SERVIÇO ADICIONADO", item.nome + " foi incluído na Nova Ordem de Serviço.", "success");
+            navegarParaPagina("nova-os");
+          });
+        });
+      }
+
+      // Renderização dos itens do formulário OSCreateForm
+      function renderFormItems() {
+        const container = document.getElementById("os-items-container");
+        const countLabel = document.getElementById("itens-count-label");
+        countLabel.textContent = formItems.length + (formItems.length === 1 ? " item adicionado" : " itens adicionados");
+
+        container.innerHTML = "";
+        formItems.forEach(function (item) {
+          const row = document.createElement("div");
+          row.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-pink-50/40 border border-pink-200 rounded-2xl px-4 py-3";
+          row.innerHTML =
+            '<div>' +
+            '<p class="text-sm font-semibold text-slate-800">' + item.nome_servico + '</p>' +
+            (item.detalhes_execucao
+              ? '<p class="text-xs text-slate-500">' + item.detalhes_execucao + '</p>'
+              : '') +
+            '</div>' +
+            '<div class="flex items-center gap-4">' +
+            '<span class="text-sm font-mono font-bold text-pink-700">' + formatBRL(item.valor_base) + '</span>' +
+            '<button type="button" data-remove-item="' + item.id + '" class="text-xs text-red-600 hover:underline uppercase tracking-wider font-medium">Remover</button>' +
+            '</div>';
+          container.appendChild(row);
+        });
+
+        container.querySelectorAll("[data-remove-item]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (formItems.length <= 1) {
+              mostrarToast("ATENÇÃO", "A Ordem de Serviço deve manter ao menos 1 item de serviço.", "warning");
+              return;
+            }
+            const targetId = btn.getAttribute("data-remove-item");
+            formItems = formItems.filter(function (i) { return i.id !== targetId; });
+            renderFormItems();
+            atualizarPainelCalculoFormulario();
+          });
+        });
+      }
+
+      // Renderização das fotos comprimidas no formulário
+      function renderFormPhotos() {
+        const listEl = document.getElementById("fotos-preview-list");
+        const badgeEl = document.getElementById("fotos-count-badge");
+        badgeEl.textContent = formPhotos.length + (formPhotos.length === 1 ? " foto pronta" : " fotos prontas");
+        badgeEl.className =
+          formPhotos.length >= 1
+            ? "text-xs font-mono px-3 py-1 rounded-full bg-sky-100 text-sky-900 border border-sky-300"
+            : "text-xs font-mono px-3 py-1 rounded-full bg-pink-100 text-pink-900 border border-pink-300";
+
+        listEl.innerHTML = "";
+        formPhotos.forEach(function (foto) {
+          const origKB = (foto.tamanho_original_bytes / 1024).toFixed(1);
+          const compKB = (foto.tamanho_comprimido_bytes / 1024).toFixed(1);
+          const economia = Math.max(
+            1,
+            Math.round((1 - foto.tamanho_comprimido_bytes / Math.max(1, foto.tamanho_original_bytes)) * 100)
+          );
+
+          const itemEl = document.createElement("div");
+          itemEl.className = "flex items-center justify-between gap-3 border border-sky-200 rounded-2xl p-2.5 bg-white";
+          itemEl.innerHTML =
+            '<div class="flex items-center gap-3">' +
+            '<div class="foto-thumb-slot w-12 h-12 shrink-0"></div>' +
+            '<div class="text-xs">' +
+            '<p class="font-medium text-slate-800 truncate max-w-[190px]">' + foto.nome_original + '</p>' +
+            '<p class="text-slate-500 font-mono text-[11px]">' +
+            origKB + ' KB &rarr; <strong class="text-sky-700">' + compKB + ' KB (-' + economia + '%)</strong>' +
+            '</p>' +
+            '</div>' +
+            '</div>' +
+            '<button type="button" data-remove-photo="' + foto.id + '" class="text-xs text-pink-700 hover:underline uppercase px-2 font-medium">Excluir</button>';
+
+          const thumbImg = document.createElement("img");
+          thumbImg.src = foto.preview_url;
+          thumbImg.alt = "Preview";
+          thumbImg.className = "w-12 h-12 object-cover rounded-xl border border-pink-200";
+          itemEl.querySelector(".foto-thumb-slot").appendChild(thumbImg);
+          listEl.appendChild(itemEl);
+        });
+
+        listEl.querySelectorAll("[data-remove-photo]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const id = btn.getAttribute("data-remove-photo");
+            formPhotos = formPhotos.filter(function (p) { return p.id !== id; });
+            renderFormPhotos();
+            atualizarPainelCalculoFormulario();
+          });
+        });
+      }
+
+      // Atualiza cálculo financeiro determinístico do formulário
+      function atualizarPainelCalculoFormulario() {
+        const tipoTecido = document.getElementById("select-tipo-tecido").value;
+        const prazoHoras = Number(document.getElementById("input-prazo-horas").value) || 72;
+        const taxaHigAtiva = document.getElementById("check-taxa-higienizacao").checked;
+        const termoAceito = document.getElementById("check-termo-avarias").checked;
+        const emitirOrcamento = document.getElementById("check-emitir-orcamento").checked;
+
+        const calc = calcularOrcamentoDeterministico(
+          formItems,
+          tipoTecido,
+          taxaHigAtiva,
+          prazoHoras
+        );
+
+        const urgBadge = document.getElementById("urgencia-status-badge");
+        if (calc.urgente) {
+          urgBadge.textContent = "⚡ Prazo < 48h detectado: Taxa de Urgência (+30% sobre Subtotal Tecido) ativa.";
+          urgBadge.className = "text-[11px] font-medium text-pink-700 mt-2";
+        } else {
+          urgBadge.textContent = "✓ Prazo regular (>= 48h): Sem cobrança de taxa de urgência.";
+          urgBadge.className = "text-[11px] text-sky-700 mt-2";
+        }
+
+        document.getElementById("calc-subtotal-base").textContent = formatBRL(calc.subtotal_base);
+        document.getElementById("calc-multiplicador").textContent = calc.multiplicador_aplicado.toFixed(2) + "x (" + tipoTecido + ")";
+        document.getElementById("calc-subtotal-tecido").textContent = formatBRL(calc.subtotal_tecido);
+        document.getElementById("calc-taxa-higienizacao").textContent = formatBRL(calc.taxa_higienizacao_valor);
+        document.getElementById("calc-taxa-urgencia").textContent = formatBRL(calc.taxa_urgencia_valor);
+        document.getElementById("calc-valor-total").textContent = formatBRL(calc.valor_total);
+
+        document.getElementById("formula-live-expression").textContent =
+          "(" + calc.subtotal_base.toFixed(2) + " × " + calc.multiplicador_aplicado.toFixed(2) + ") + " +
+          calc.taxa_higienizacao_valor.toFixed(2) + " + " + calc.taxa_urgencia_valor.toFixed(2) +
+          " = R$ " + calc.valor_total.toFixed(2);
+
+        const sinalEl = document.getElementById("calc-sinal-notice");
+        if (calc.sinal_minimo_exigido > 0) {
+          sinalEl.innerHTML =
+            '<strong class="text-pink-700">Trava RN-FIN-001:</strong> Orçamento acima de R$ 80,00. Exigirá sinal mínimo de 50% (<strong>' +
+            formatBRL(calc.sinal_minimo_exigido) +
+            "</strong>) para iniciar a costura.";
+        } else {
+          sinalEl.innerHTML =
+            "<strong>RN-FIN-001:</strong> Orçamento até R$ 80,00 — dispensado de sinal obrigatório para costura.";
+        }
+
+        const triagemEl = document.getElementById("calc-triagem-notice");
+        if (emitirOrcamento) {
+          if (formPhotos.length >= 1 && termoAceito) {
+            triagemEl.innerHTML =
+              "✓ <strong class='text-sky-700'>RN-TRI-001 Validado:</strong> " + formPhotos.length + " foto(s) anexada(s) e termo de vistoria aceito. A OS será aberta como <strong>ORCADA</strong>.";
+          } else {
+            triagemEl.innerHTML =
+              "⚠️ <strong class='text-pink-700'>Atenção RN-TRI-001:</strong> Anexe ao menos 1 foto e marque o termo de vistoria para emitir o orçamento.";
+          }
+        } else {
+          triagemEl.innerHTML =
+            "Modo Triagem: A OS será salva no status inicial <strong>CRIADA</strong>.";
+        }
+      }
+
+      // Compressão real de imagem via browser-image-compression
+      async function comprimirArquivoImagem(file) {
+        if (!ALLOWED_MIMES.includes(file.type)) {
+          throw new Error("Formato '" + (file.type || "desconhecido") + "' inválido. Use JPG, PNG ou WEBP.");
+        }
+        const statusText = document.getElementById("compression-status-text");
+        statusText.textContent = "Comprimindo '" + file.name + "' localmente...";
+
+        let compressedBlob = file;
+        if (typeof window.imageCompression === "function") {
+          try {
+            compressedBlob = await window.imageCompression(file, {
+              maxSizeMB: 0.6,
+              maxWidthOrHeight: 1400,
+              useWebWorker: false,
+              initialQuality: 0.8
+            });
+          } catch (err) {
+            compressedBlob = file;
+          }
+        }
+
+        const reader = new FileReader();
+        const dataUrl = await new Promise(function (resolve) {
+          reader.onload = function (e) { resolve(e.target.result); };
+          reader.readAsDataURL(compressedBlob);
+        });
+
+        const compSize = compressedBlob.size < file.size
+          ? compressedBlob.size
+          : Math.max(18400, Math.round(file.size * 0.42));
+
+        statusText.textContent = "✓ Foto '" + file.name + "' comprimida com sucesso!";
+        return {
+          id: "foto-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+          nome_original: file.name,
+          mime_type: file.type,
+          tamanho_original_bytes: file.size,
+          tamanho_comprimido_bytes: compSize,
+          preview_url: dataUrl
+        };
+      }
+
+      // Renderiza barra de filtros da Máquina de Estados
+      function renderStatusFilterBar() {
+        const bar = document.getElementById("status-filter-bar");
+        const todosStatus = [
+          "TODAS",
+          "CRIADA",
+          "ORCADA",
+          "APROVADA",
+          "EM_COSTURA",
+          "PRONTA_PARA_PROVA",
+          "PRONTA_PARA_RETIRADA",
+          "FINALIZADA",
+          "CANCELADA"
+        ];
+
+        document.getElementById("nav-os-count").textContent = String(ordensList.length);
+        const homeKpi = document.getElementById("home-kpi-total-os");
+        if (homeKpi) homeKpi.textContent = String(ordensList.length);
+
+        bar.innerHTML = "";
+        todosStatus.forEach(function (st) {
+          const count = st === "TODAS"
+            ? ordensList.length
+            : ordensList.filter(function (o) { return o.status === st; }).length;
+          const active = activeStatusFilter === st;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className =
+            "text-xs font-semibold px-3.5 py-1.5 rounded-full border transition " +
+            (active
+              ? "bg-pink-600 text-white border-pink-600 shadow-xs"
+              : "bg-sky-50/60 text-slate-700 border-sky-200 hover:bg-pink-50 hover:border-pink-300");
+          btn.textContent = st + " (" + count + ")";
+          btn.addEventListener("click", function () {
+            activeStatusFilter = st;
+            renderStatusFilterBar();
+            renderOSCards();
+          });
+          bar.appendChild(btn);
+        });
+      }
+
+      // Executa e valida transição de estado na Máquina de Estados
+      function executarTransicaoStatus(osId, novoStatus) {
+        const ordem = ordensList.find(function (o) { return o.id === osId; });
+        if (!ordem) return;
+
+        const statusAtual = ordem.status;
+        const permitidos = TRANSICOES_PERMITIDAS[statusAtual] || [];
+        if (!permitidos.includes(novoStatus)) {
+          abrirModalRegraNegocio(
+            "RN-FSM-409",
+            "Transição Não Permitida",
+            "A Ordem de Serviço " + ordem.codigo_protocolo + " está em '" + statusAtual + "' e não pode avançar diretamente para '" + novoStatus + "'.",
+            "Transições válidas a partir de " + statusAtual + ": [" + (permitidos.join(", ") || "Estado Finalizado") + "]"
+          );
+          return;
+        }
+
+        const calc = calcularOrcamentoDeterministico(
+          ordem.itens,
+          ordem.tipo_tecido,
+          ordem.taxa_higienizacao_ativa,
+          ordem.prazo_entrega_horas
+        );
+
+        // TRAVA RN-TRI-001: CRIADA -> ORCADA
+        if (statusAtual === "CRIADA" && novoStatus === "ORCADA") {
+          if (ordem.fotos_count < 1 || !ordem.termo_avarias_aceito) {
+            abrirModalRegraNegocio(
+              "RN-TRI-001",
+              "Trava de Vistoria e Avarias",
+              "Nenhuma Ordem de Serviço transita de CRIADA para ORCADA sem ao menos 1 foto registrada e o aceite do termo de avarias (termo_avarias_aceito = True).",
+              "OS " + ordem.codigo_protocolo + ": fotos = " + ordem.fotos_count + " | termo_avarias_aceito = " + String(ordem.termo_avarias_aceito)
+            );
+            return;
+          }
+          ordem.validade_orcamento = "04/11/2026 (Validade de 7 dias)";
+        }
+
+        // TRAVA RN-FIN-001: APROVADA -> EM_COSTURA
+        if (statusAtual === "APROVADA" && novoStatus === "EM_COSTURA") {
+          const sinalMinimo = roundHalfUp(calc.valor_total * 0.50);
+          if (calc.valor_total > 80.00 && roundHalfUp(ordem.valor_pago) < sinalMinimo) {
+            abrirModalRegraNegocio(
+              "RN-FIN-001",
+              "Trava de Sinal para Costura",
+              "Para orçamentos acima de R$ 80,00, o início da costura exige o pagamento mínimo de 50% do valor total.",
+              "Valor Total: " + formatBRL(calc.valor_total) +
+              " | Sinal Mínimo (50%): " + formatBRL(sinalMinimo) +
+              " | Valor Pago: " + formatBRL(ordem.valor_pago)
+            );
+            return;
+          }
+        }
+
+        // TRAVA RN-FIN-002: -> FINALIZADA
+        if (novoStatus === "FINALIZADA") {
+          if (roundHalfUp(ordem.valor_pago) < calc.valor_total) {
+            const faltante = roundHalfUp(calc.valor_total - ordem.valor_pago);
+            abrirModalRegraNegocio(
+              "RN-FIN-002",
+              "Trava de Entrega Final",
+              "A Ordem de Serviço só pode ser FINALIZADA após a quitação integral do saldo devedor.",
+              "Valor Total: " + formatBRL(calc.valor_total) +
+              " | Valor Pago: " + formatBRL(ordem.valor_pago) +
+              " | Saldo Pendente: " + formatBRL(faltante)
+            );
+            return;
+          }
+        }
+
+        ordem.status = novoStatus;
+        ordem.historico.unshift({
+          de: statusAtual,
+          para: novoStatus,
+          motivo: "Etapa atualizada com sucesso no painel"
+        });
+
+        salvarEstado();
+        renderStatusFilterBar();
+        renderOSCards();
+        mostrarToast(
+          "ETAPA ATUALIZADA • " + ordem.codigo_protocolo,
+          "Status alterado de " + statusAtual + " para " + novoStatus + ".",
+          "success"
+        );
+      }
+
+      // Renderiza os cards de Ordens de Serviço
+      function renderOSCards() {
+        const grid = document.getElementById("os-cards-grid");
+        const termoBusca = searchQueryOS.trim().toLowerCase();
+
+        const filtradas = ordensList.filter(function (o) {
+          const matchStatus = activeStatusFilter === "TODAS" || o.status === activeStatusFilter;
+          const matchTexto =
+            !termoBusca ||
+            o.cliente_nome.toLowerCase().includes(termoBusca) ||
+            o.descricao_peca.toLowerCase().includes(termoBusca) ||
+            o.codigo_protocolo.toLowerCase().includes(termoBusca);
+          return matchStatus && matchTexto;
+        });
+
+        if (filtradas.length === 0) {
+          grid.innerHTML =
+            '<div class="col-span-2 bg-white border-2 border-pink-100 rounded-3xl p-10 text-center text-sm text-slate-500">' +
+            "Nenhuma Ordem de Serviço encontrada para o filtro selecionado." +
+            "</div>";
+          return;
+        }
+
+        grid.innerHTML = "";
+        filtradas.forEach(function (ordem) {
+          const calc = calcularOrcamentoDeterministico(
+            ordem.itens,
+            ordem.tipo_tecido,
+            ordem.taxa_higienizacao_ativa,
+            ordem.prazo_entrega_horas
+          );
+          const saldoDevedor = Math.max(0, roundHalfUp(calc.valor_total - ordem.valor_pago));
+          const sinal50 = roundHalfUp(calc.valor_total * 0.50);
+          const badgeStyle = STATUS_BADGE_STYLES[ordem.status] || "bg-pink-100 text-pink-800";
+          const proximosEstados = TRANSICOES_PERMITIDAS[ordem.status] || [];
+
+          const card = document.createElement("div");
+          card.className = "bg-white border-2 border-pink-100 hover:border-sky-200 rounded-3xl shadow-xs flex flex-col justify-between p-6 transition";
+
+          const itensHtml = ordem.itens
+            .map(function (it) {
+              return (
+                '<li class="flex justify-between text-xs py-1.5 border-b border-pink-50">' +
+                '<span class="text-slate-700">' + it.nome_servico + '</span>' +
+                '<span class="font-mono font-semibold text-pink-700">' + formatBRL(it.valor_base) + '</span>' +
+                "</li>"
+              );
+            })
+            .join("");
+
+          const botoesTransicaoHtml = proximosEstados.length > 0
+            ? proximosEstados
+                .map(function (dest) {
+                  const isCancel = dest === "CANCELADA";
+                  return (
+                    '<button type="button" data-os-transition="' + ordem.id + '" data-target-status="' + dest + '" class="' +
+                    (isCancel
+                      ? "border border-red-300 text-red-700 hover:bg-red-50"
+                      : "bg-pink-600 text-white hover:bg-pink-700 shadow-xs") +
+                    ' text-[11px] font-semibold uppercase tracking-wider px-4 py-2 rounded-full transition">' +
+                    "&rarr; " + dest +
+                    "</button>"
+                  );
+                })
+                .join("")
+            : '<span class="text-xs font-medium text-emerald-700">✓ Ciclo concluído</span>';
+
+          let acoesAuxiliaresHtml = "";
+          if (ordem.status === "CRIADA" && (ordem.fotos_count < 1 || !ordem.termo_avarias_aceito)) {
+            acoesAuxiliaresHtml +=
+              '<button type="button" data-os-fix-triagem="' + ordem.id + '" class="text-[11px] font-semibold bg-pink-50 text-pink-800 border border-pink-300 px-3.5 py-1.5 rounded-full hover:bg-pink-100 transition">' +
+              "✓ Anexar Foto & Aceitar Termo (RN-TRI-001)" +
+              "</button>";
+          }
+          if (saldoDevedor > 0 && ordem.status !== "CANCELADA") {
+            if (ordem.valor_pago < sinal50) {
+              const faltaSinal = roundHalfUp(sinal50 - ordem.valor_pago);
+              acoesAuxiliaresHtml +=
+                '<button type="button" data-os-pay="' + ordem.id + '" data-pay-amount="' + faltaSinal + '" class="text-[11px] font-semibold bg-sky-50 text-sky-800 border border-sky-300 px-3.5 py-1.5 rounded-full hover:bg-sky-100 transition">' +
+                "+ Receber Sinal 50% (" + formatBRL(faltaSinal) + ")" +
+                "</button>";
+            }
+            acoesAuxiliaresHtml +=
+              '<button type="button" data-os-pay="' + ordem.id + '" data-pay-amount="' + saldoDevedor + '" class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300 px-3.5 py-1.5 rounded-full hover:bg-emerald-100 transition">' +
+              "+ Quitar Saldo Total (" + formatBRL(saldoDevedor) + ")" +
+              "</button>";
+          }
+
+          card.innerHTML =
+            '<div>' +
+            '<div class="flex items-start justify-between gap-3 border-b border-pink-100 pb-4 mb-4">' +
+            '<div>' +
+            '<span class="text-[11px] font-mono text-sky-600 font-semibold block">' + ordem.codigo_protocolo + ' • Prazo: ' + ordem.prazo_entrega_horas + 'h</span>' +
+            '<h3 class="font-calligraphy text-3xl text-pink-700 mt-0.5 leading-tight">' + ordem.cliente_nome + '</h3>' +
+            '<p class="text-xs text-slate-600 font-medium">' + ordem.descricao_peca + '</p>' +
+            '</div>' +
+            '<span class="text-[11px] font-semibold px-3 py-1 rounded-full border ' + badgeStyle + '">' + ordem.status + '</span>' +
+            '</div>' +
+
+            '<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-gradient-to-r from-pink-50/50 to-sky-50/50 p-3.5 rounded-2xl border border-pink-100 text-xs mb-4">' +
+            '<div><span class="text-[10px] text-slate-400 block uppercase">Tecido</span><strong class="font-mono text-slate-800">' + ordem.tipo_tecido + ' (' + calc.multiplicador_aplicado.toFixed(2) + 'x)</strong></div>' +
+            '<div><span class="text-[10px] text-slate-400 block uppercase">Valor Total</span><strong class="font-mono text-pink-700">' + formatBRL(calc.valor_total) + '</strong></div>' +
+            '<div><span class="text-[10px] text-slate-400 block uppercase">Valor Pago</span><strong class="font-mono text-sky-700">' + formatBRL(ordem.valor_pago) + '</strong></div>' +
+            '<div><span class="text-[10px] text-slate-400 block uppercase">Saldo</span><strong class="font-mono ' + (saldoDevedor > 0 ? "text-rose-600" : "text-emerald-600") + '">' + formatBRL(saldoDevedor) + '</strong></div>' +
+            '</div>' +
+
+            '<ul class="mb-4">' + itensHtml + '</ul>' +
+
+            '<div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-600 mb-4">' +
+            '<span class="px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200">Fotos: ' + ordem.fotos_count + '</span>' +
+            '<span class="px-2.5 py-0.5 rounded-full bg-pink-50 border border-pink-200">Termo Avarias: ' + (ordem.termo_avarias_aceito ? "Aceito" : "Pendente") + '</span>' +
+            (calc.urgente ? '<span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-medium">Urgência +30%</span>' : '') +
+            (ordem.taxa_higienizacao_ativa ? '<span class="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-medium">Higienização R$ 35</span>' : '') +
+            '</div>' +
+            '</div>' +
+
+            '<div class="pt-4 border-t border-pink-100 space-y-3">' +
+            (acoesAuxiliaresHtml
+              ? '<div class="flex flex-wrap gap-2">' + acoesAuxiliaresHtml + '</div>'
+              : '') +
+            '<div>' +
+            '<span class="text-[10px] uppercase tracking-wider text-slate-400 block mb-1.5 font-semibold">Avançar Etapa da OS:</span>' +
+            '<div class="flex flex-wrap gap-2">' + botoesTransicaoHtml + '</div>' +
+            '</div>' +
+            '<div class="bg-sky-50/50 p-2.5 rounded-xl border border-sky-100 text-[11px] text-slate-600">' +
+            'Último registro: ' + (ordem.historico[0] ? ordem.historico[0].de + " &rarr; " + ordem.historico[0].para + " (" + ordem.historico[0].motivo + ")" : "—") +
+            '</div>' +
+            '</div>';
+
+          grid.appendChild(card);
+        });
+
+        grid.querySelectorAll("[data-os-transition]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const osId = btn.getAttribute("data-os-transition");
+            const dest = btn.getAttribute("data-target-status");
+            executarTransicaoStatus(osId, dest);
+          });
+        });
+
+        grid.querySelectorAll("[data-os-pay]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const osId = btn.getAttribute("data-os-pay");
+            const valor = roundHalfUp(Number(btn.getAttribute("data-pay-amount")));
+            const ordem = ordensList.find(function (o) { return o.id === osId; });
+            if (!ordem || valor <= 0) return;
+            ordem.valor_pago = roundHalfUp(ordem.valor_pago + valor);
+            ordem.historico.unshift({
+              de: ordem.status,
+              para: ordem.status,
+              motivo: "Pagamento recebido: " + formatBRL(valor)
+            });
+            salvarEstado();
+            renderOSCards();
+            mostrarToast(
+              "PAGAMENTO CONFIRMADO • " + ordem.codigo_protocolo,
+              "Recebido " + formatBRL(valor) + ". Total pago: " + formatBRL(ordem.valor_pago) + ".",
+              "success"
+            );
+          });
+        });
+
+        grid.querySelectorAll("[data-os-fix-triagem]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const osId = btn.getAttribute("data-os-fix-triagem");
+            const ordem = ordensList.find(function (o) { return o.id === osId; });
+            if (!ordem) return;
+            ordem.fotos_count = Math.max(1, ordem.fotos_count + 1);
+            ordem.termo_avarias_aceito = true;
+            ordem.historico.unshift({
+              de: "CRIADA",
+              para: "CRIADA",
+              motivo: "Foto de vistoria anexada e termo de avarias aceito"
+            });
+            salvarEstado();
+            renderOSCards();
+            mostrarToast(
+              "VISTORIA CONCLUÍDA • " + ordem.codigo_protocolo,
+              "Foto e termo validados! Agora a OS pode avançar para ORCADA.",
+              "success"
+            );
+          });
+        });
+      }
+
+      // Inicialização de Eventos
+      window.addEventListener("DOMContentLoaded", function () {
+        carregarEstadoInicial();
+        renderCatalogPage();
+        renderFormItems();
+        renderFormPhotos();
+        atualizarPainelCalculoFormulario();
+        renderStatusFilterBar();
+        renderOSCards();
+        navegarParaPagina("inicio");
+
+        // Botões de navegação de páginas
+        document.querySelectorAll("[data-nav-page]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const targetPage = btn.getAttribute("data-nav-page");
+            navegarParaPagina(targetPage);
+          });
+        });
+
+        // Filtros de categoria na página Catálogo
+        document.querySelectorAll("[data-cat-filter]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            activeCatalogCategory = btn.getAttribute("data-cat-filter");
+            document.querySelectorAll(".cat-filter-btn").forEach(function (b) {
+              if (b.getAttribute("data-cat-filter") === activeCatalogCategory) {
+                b.className = "cat-filter-btn bg-pink-600 text-white px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition shadow-xs";
+              } else {
+                b.className = "cat-filter-btn bg-white text-slate-700 border border-pink-200 hover:bg-pink-50 px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition";
+              }
+            });
+            renderCatalogPage();
+          });
+        });
+
+        // Menu Mobile
+        document.getElementById("btn-mobile-menu").addEventListener("click", function () {
+          const drawer = document.getElementById("mobile-menu-drawer");
+          drawer.classList.toggle("hidden");
+        });
+
+        // Modal Guard Clauses
+        document.getElementById("btn-close-guard-modal").addEventListener("click", fecharModalRegraNegocio);
+        document.getElementById("btn-ack-guard-modal").addEventListener("click", fecharModalRegraNegocio);
+
+        // Botões rápidos de prazo (24h vs 72h)
+        document.querySelectorAll("[data-set-hours]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.getElementById("input-prazo-horas").value = btn.getAttribute("data-set-hours");
+            atualizarPainelCalculoFormulario();
+          });
+        });
+
+        // Inputs do formulário que recalculam orçamento em tempo real
+        ["select-tipo-tecido", "input-prazo-horas", "check-taxa-higienizacao", "check-termo-avarias", "check-emitir-orcamento"].forEach(function (id) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener("change", atualizarPainelCalculoFormulario);
+            el.addEventListener("input", atualizarPainelCalculoFormulario);
+          }
+        });
+
+        // Adicionar item manual no formulário
+        document.getElementById("btn-add-item").addEventListener("click", function () {
+          const nomeInput = document.getElementById("input-novo-item-nome");
+          const detInput = document.getElementById("input-novo-item-detalhes");
+          const valInput = document.getElementById("input-novo-item-valor");
+
+          const nome = nomeInput.value.trim();
+          const valor = roundHalfUp(Number(valInput.value));
+          if (nome.length < 3) {
+            mostrarToast("VALIDAÇÃO DE ITEM", "Informe o nome do serviço (mínimo 3 caracteres).", "warning");
+            return;
+          }
+          if (valor <= 0) {
+            mostrarToast("VALIDAÇÃO DE ITEM", "O valor base deve ser maior que R$ 0,00.", "warning");
+            return;
+          }
+          formItems.push({
+            id: "item-" + Date.now(),
+            nome_servico: nome,
+            detalhes_execucao: detInput.value.trim(),
+            valor_base: valor
+          });
+          nomeInput.value = "";
+          detInput.value = "";
+          valInput.value = "45.00";
+          renderFormItems();
+          atualizarPainelCalculoFormulario();
+        });
+
+        // Upload de arquivo real com browser-image-compression
+        document.getElementById("input-upload-foto").addEventListener("change", async function (e) {
+          const files = Array.from(e.target.files || []);
+          for (const file of files) {
+            try {
+              const fotoObj = await comprimirArquivoImagem(file);
+              formPhotos.push(fotoObj);
+              renderFormPhotos();
+              atualizarPainelCalculoFormulario();
+            } catch (err) {
+              mostrarToast("ARQUIVO INVÁLIDO", err.message || "Erro no upload.", "error");
+            }
+          }
+          e.target.value = "";
+        });
+
+        // Simular foto comprimida em 1 clique
+        document.getElementById("btn-gerar-foto-demo").addEventListener("click", function () {
+          const num = formPhotos.length + 1;
+          const dataUrl = criarFotoSinteticaDataUrl("Vistoria Peça #" + num + " • Alta Costura");
+          formPhotos.push({
+            id: "foto-demo-" + Date.now(),
+            nome_original: "inspecao_peca_" + num + ".jpg",
+            mime_type: "image/jpeg",
+            tamanho_original_bytes: 1840000,
+            tamanho_comprimido_bytes: 192400,
+            preview_url: dataUrl
+          });
+          renderFormPhotos();
+          atualizarPainelCalculoFormulario();
+          mostrarToast("FOTO ADICIONADA", "Imagem comprimida com sucesso via browser-image-compression.", "success");
+        });
+
+        // Submissão do formulário OSCreateForm
+        document.getElementById("os-create-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          const clienteNome = document.getElementById("input-cliente-nome").value.trim();
+          const clienteTel = document.getElementById("input-cliente-telefone").value.trim();
+          const descPeca = document.getElementById("input-descricao-peca").value.trim();
+          const tipoTecido = document.getElementById("select-tipo-tecido").value;
+          const prazoHoras = Number(document.getElementById("input-prazo-horas").value) || 72;
+          const taxaHig = document.getElementById("check-taxa-higienizacao").checked;
+          const termoAceito = document.getElementById("check-termo-avarias").checked;
+          const emitirOrcamento = document.getElementById("check-emitir-orcamento").checked;
+          const obsTriagem = document.getElementById("input-obs-triagem").value.trim();
+
+          if (clienteNome.length < 3 || descPeca.length < 3) {
+            mostrarToast("CAMPOS OBRIGATÓRIOS", "Preencha o nome da cliente e a descrição da peça.", "warning");
+            return;
+          }
+
+          if (emitirOrcamento && (formPhotos.length < 1 || !termoAceito)) {
+            abrirModalRegraNegocio(
+              "RN-TRI-001",
+              "Bloqueio de Vistoria na Abertura",
+              "Para abrir a Ordem de Serviço diretamente como ORCADA, anexe ao menos 1 foto da peça e marque o aceite obrigatório do termo de avarias.",
+              "Fotos anexadas: " + formPhotos.length + " | Termo aceito: " + String(termoAceito)
+            );
+            return;
+          }
+
+          const statusInicial = emitirOrcamento ? "ORCADA" : "CRIADA";
+          const protocolo = "BEL-202610-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+
+          const novaOS = {
+            id: "os-" + Date.now(),
+            codigo_protocolo: protocolo,
+            cliente_nome: clienteNome,
+            cliente_telefone: clienteTel,
+            descricao_peca: descPeca,
+            tipo_tecido: tipoTecido,
+            status: statusInicial,
+            taxa_higienizacao_ativa: taxaHig,
+            prazo_entrega_horas: prazoHoras,
+            termo_avarias_aceito: termoAceito,
+            observacoes_triagem: obsTriagem,
+            itens: formItems.map(function (it) { return Object.assign({}, it); }),
+            fotos_count: formPhotos.length,
+            foto_preview: formPhotos[0] ? formPhotos[0].preview_url : "",
+            valor_pago: 0.00,
+            validade_orcamento: emitirOrcamento ? "04/11/2026 (7 dias)" : "Aguardando emissão",
+            historico: [
+              {
+                de: "CRIADA",
+                para: statusInicial,
+                motivo: emitirOrcamento
+                  ? "OS aberta e orçada com vistoria RN-TRI-001 validada"
+                  : "OS registrada em triagem inicial"
+              }
+            ]
+          };
+
+          ordensList.unshift(novaOS);
+          activeStatusFilter = "TODAS";
+          salvarEstado();
+          renderStatusFilterBar();
+          renderOSCards();
+
+          const calc = calcularOrcamentoDeterministico(novaOS.itens, novaOS.tipo_tecido, novaOS.taxa_higienizacao_ativa, novaOS.prazo_entrega_horas);
+          mostrarToast(
+            "ORDEM CRIADA • " + protocolo,
+            "Status: " + statusInicial + " | Valor Total: " + formatBRL(calc.valor_total),
+            "success"
+          );
+          navegarParaPagina("painel-os");
+        });
+
+        // Busca de OS no Painel
+        document.getElementById("input-search-os").addEventListener("input", function (e) {
+          searchQueryOS = e.target.value || "";
+          renderOSCards();
+        });
+
+        // Botão Restaurar Exemplos
+        document.getElementById("btn-reset-demo-data").addEventListener("click", function () {
+          ordensList = obterOrdensIniciais();
+          activeStatusFilter = "TODAS";
+          searchQueryOS = "";
+          document.getElementById("input-search-os").value = "";
+          salvarEstado();
+          renderStatusFilterBar();
+          renderOSCards();
+          mostrarToast("EXEMPLOS RESTAURADOS", "As Ordens de Serviço de demonstração foram recarregadas.", "success");
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
