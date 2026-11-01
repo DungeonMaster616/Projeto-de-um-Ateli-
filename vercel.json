@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+<<<<<<< HEAD
   "version": 2,
   "framework": null,
   "buildCommand": "",
@@ -11,10 +12,30 @@
     {
       "source": "/images/:path*",
       "destination": "/public/images/:path*"
+=======
+  "services": {
+    "backend": {
+      "root": "backend",
+      "framework": "django"
+    },
+    "frontend": {
+      "root": "frontend",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "backend"
+      }
+>>>>>>> f2e8261a6cd799cfce8ceea4493e119112e74981
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": {
+        "service": "frontend"
+      }
     }
   ],
   "headers": [
