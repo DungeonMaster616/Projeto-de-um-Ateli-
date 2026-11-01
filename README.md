@@ -19,20 +19,3 @@ Projeto completo desenvolvido conforme especificação formal de Engenharia de S
 ├── index.html                 # Aplicação Web Completa pronta para deploy imediato na Vercel / GitHub Pages
 ├── vercel.json                # Configuração de Deploy na Vercel
 └── package.json               # Manifesto do projeto para integração GitHub -> Vercel
-```
-
-## Como Hospedar no GitHub + Vercel (Passo a Passo)
-
-### Opção 1: Deploy Instantâneo na Vercel via GitHub
-1. Crie um novo repositório no **GitHub** (ex.: `atelie-da-belinha`).
-2. Extraia o conteúdo deste arquivo `.zip` na pasta do seu projeto e envie para o GitHub:
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: implement Atelie da Belinha domain core and editorial website"
-   git branch -M main
-   git remote add origin https://github.com/SEU-USUARIO/atelie-da-belinha.git
-   git push -u origin main
-   ```
-3. Acesse [vercel.com/new](https://vercel.com/new), conecte sua conta do GitHub e clique em **Import** no repositório `atelie-da-belinha`.
-4. Clique em **Deploy** — o projeto já inclui `index.html` autocontido e configuração pronta para servir imediatamente em produção!
